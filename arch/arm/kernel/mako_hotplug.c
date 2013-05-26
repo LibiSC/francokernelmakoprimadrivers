@@ -77,7 +77,7 @@ static void scale_interactive_tunables(unsigned int above_hispeed_delay,
     scale_min_sample_time(min_sample_time);
 }
 
-static void first_level_work_check(unsigned long now)
+static void __cpuinit first_level_work_check(unsigned long now)
 {
     unsigned int cpu = nr_cpu_ids;
     
@@ -97,7 +97,7 @@ static void first_level_work_check(unsigned long now)
     stats.time_stamp = now;
 }
 
-static void second_level_work_check(unsigned long now)
+static void __cpuinit second_level_work_check(unsigned long now)
 {
     unsigned int cpu = nr_cpu_ids;
 
@@ -159,7 +159,7 @@ static void third_level_work_check(unsigned int load, unsigned long now)
     stats.time_stamp = now;
 }
 
-static void decide_hotplug_func(struct work_struct *work)
+static void  __cpuinit decide_hotplug_func(struct work_struct *work)
 {
     unsigned long now;
     unsigned int i, j, first_level, second_level, load = 0;
@@ -245,7 +245,7 @@ static void decide_hotplug_func(struct work_struct *work)
     queue_delayed_work_on(0, wq, &decide_hotplug, msecs_to_jiffies(HZ));
 }
 
-static void mako_hotplug_early_suspend(struct early_suspend *handler)
+static void  mako_hotplug_early_suspend(struct early_suspend *handler)
 {	 
     /* cancel the hotplug work when the screen is off and flush the WQ */
     cancel_delayed_work_sync(&decide_hotplug);
@@ -261,7 +261,7 @@ static void mako_hotplug_early_suspend(struct early_suspend *handler)
             0, stats.suspend_frequency/1000);
 }
 
-static void mako_hotplug_late_resume(struct early_suspend *handler)
+static void __cpuinit mako_hotplug_late_resume(struct early_suspend *handler)
 {    
     /* online all cores when the screen goes online */
     first_level_work_check(ktime_to_ms(ktime_get()));
@@ -274,7 +274,7 @@ static void mako_hotplug_late_resume(struct early_suspend *handler)
     queue_delayed_work_on(0, wq, &decide_hotplug, HZ);
 }
 
-static struct early_suspend mako_hotplug_suspend =
+static struct early_suspend mako_hotplug_suspenddriver =
 {
     .level = EARLY_SUSPEND_LEVEL_BLANK_SCREEN + 1,
 	.suspend = mako_hotplug_early_suspend,
@@ -367,7 +367,7 @@ int __init mako_hotplug_init(void)
     INIT_DELAYED_WORK(&decide_hotplug, decide_hotplug_func);
     queue_delayed_work_on(0, wq, &decide_hotplug, HZ*25);
     
-    register_early_suspend(&mako_hotplug_suspend);
+    register_early_suspend(&mako_hotplug_suspenddriver);
     
     return 0;
 }
