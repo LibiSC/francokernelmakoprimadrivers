@@ -120,7 +120,9 @@ struct ci13xxx_ep {
 	int				      prime_timer_count;
 	struct timer_list		      prime_timer;
 
+
 	bool                                  multi_req;
+
 };
 
 struct ci13xxx;

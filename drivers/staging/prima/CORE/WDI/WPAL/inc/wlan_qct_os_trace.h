@@ -43,7 +43,7 @@
 #define __WLAN_QCT_OS_TRACE_H
 
 
-#ifdef WLAN_DEBUG
+#ifdef WAS_WLAN_DEBUG
 
 /**----------------------------------------------------------------------------
   
@@ -108,9 +108,9 @@ void wpalDump( wpt_moduleid module, wpt_tracelevel level,
     } while (0)
 #else //WLAN_DEBUG
 
-#define WPAL_TRACE
+#define WPAL_TRACE(x...)
 #define WPAL_DUMP
-#define WPAL_ASSERT
+#define WPAL_ASSERT(x...)
 
 #endif //WLAN_DEBUG
 

@@ -440,7 +440,7 @@ static int hw_ep_flush(int num, int dir)
 					__func__, num,
 					dir ? "IN" : "OUT");
 				debug_ept_flush_info(num, dir);
-				_udc->skip_flush = true;
+
 				return 0;
 			}
 		}

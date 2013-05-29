@@ -94,11 +94,13 @@ static int rmnet_usb_suspend(struct usb_interface *iface, pm_message_t message)
 
 	if (work_busy(&dev->get_encap_work))
 		return -EBUSY;
-	
+
+
 	if (usbnet_suspend(iface, message))
 		return -EBUSY;
 
 	usb_kill_anchored_urbs(&dev->rx_submitted);
+
 
 	return 0;
 }
@@ -115,7 +117,7 @@ static int rmnet_usb_resume(struct usb_interface *iface)
 
 	usbnet_resume(iface);
 	retval = rmnet_usb_ctrl_start_rx(dev);
-	
+
 	return retval;
 }
 
