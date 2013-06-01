@@ -94,10 +94,8 @@ void diag_bridge_close(void)
 	usb_kill_anchored_urbs(&dev->submitted);
 	dev->ops = 0;
 
-	
 	pm_runtime_set_autosuspend_delay(&dev->udev->dev,
-				dev->default_autosusp_delay);
-
+			dev->default_autosusp_delay);
 
 	kref_put(&dev->kref, diag_bridge_delete);
 }
