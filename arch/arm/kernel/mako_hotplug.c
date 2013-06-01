@@ -70,11 +70,11 @@ void is_touching(bool touch, unsigned long time_off,
 }
 
 static void scale_interactive_tunables(unsigned int above_hispeed_delay,
-    unsigned int go_hispeed_load, unsigned int timer_rate, 
+    unsigned int timer_rate, 
     unsigned int min_sample_time)
 {
     scale_above_hispeed_delay(above_hispeed_delay);
-    scale_go_hispeed_load(go_hispeed_load);
+    //scale_go_hispeed_load(go_hispeed_load);
     scale_timer_rate(timer_rate);
     scale_min_sample_time(min_sample_time);
 }
@@ -91,7 +91,7 @@ static void __cpuinit first_level_work_check(unsigned long now)
     {
         /* 5 seconds in high load to scale tunables up */
         if (now - stats.time_stamp >= 5000)
-            scale_interactive_tunables(0, 80, 10000, 80000);
+            scale_interactive_tunables(0, 10000, 80000);
 
         return;
     }
@@ -127,7 +127,13 @@ static void __cpuinit second_level_work_check(unsigned long now)
 
     /* lets bail if all cores are online */
     if (stats.online_cpus == stats.total_cpus)
+    {
+        /* 5 seconds in high load to scale tunables up */
+        if (now - stats.time_stamp >= 5000)
+            scale_interactive_tunables(0, 10000, 80000);
+
         return;
+    }
 
     for_each_possible_cpu(cpu)
     {
@@ -158,7 +164,7 @@ static void third_level_work_check(unsigned int load, unsigned long now)
     {   
         for_each_online_cpu(cpu)
         {
-            if (cpu)
+            if (likely(cpu))
             {
                 cpu_down(cpu);
                 pr_info("Hotplug: cpu%d is down - low load\n", cpu);
@@ -170,7 +176,7 @@ static void third_level_work_check(unsigned int load, unsigned long now)
     {
         for_each_online_cpu(cpu)
         {
-            if (cpu)
+            if (likely(cpu))
             {
                 cpu_down(cpu);
                 pr_info("Hotplug: cpu%d is down - low load\n", cpu);
@@ -180,7 +186,7 @@ static void third_level_work_check(unsigned int load, unsigned long now)
     }
 
     if (likely(num_online_cpus() < 3))
-        scale_interactive_tunables(10000, 95, 50000, 20000);
+        scale_interactive_tunables(10000, 50000, 20000);
 
     stats.time_stamp = now;
 }
