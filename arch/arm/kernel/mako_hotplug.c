@@ -74,7 +74,8 @@ static void scale_interactive_tunables(unsigned int above_hispeed_delay,
     unsigned int min_sample_time)
 {
     scale_above_hispeed_delay(above_hispeed_delay);
-    //scale_go_hispeed_load(go_hispeed_load);
+
+
     scale_timer_rate(timer_rate);
     scale_min_sample_time(min_sample_time);
 }
@@ -186,7 +187,9 @@ static void third_level_work_check(unsigned int load, unsigned long now)
     }
 
     if (likely(num_online_cpus() < 3))
-        scale_interactive_tunables(10000, 50000, 20000);
+
+        scale_interactive_tunables(20000, 35000, 20000);
+
 
     stats.time_stamp = now;
 }
@@ -397,8 +400,7 @@ int __init mako_hotplug_init(void)
     stats.suspend_frequency = DEFAULT_SUSPEND_FREQ;
     stats.cores_on_touch = DEFAULT_CORES_ON_TOUCH;
     
-    wq = alloc_workqueue("mako_hotplug_workqueue",
-                         WQ_UNBOUND | WQ_RESCUER | WQ_FREEZABLE, 1);
+    wq = alloc_workqueue("mako_hotplug_workqueue", WQ_HIGHPRI, 1);
     
     if (!wq)
         return -ENOMEM;
