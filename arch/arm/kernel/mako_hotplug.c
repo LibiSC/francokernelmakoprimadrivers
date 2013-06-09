@@ -113,6 +113,7 @@ static void __cpuinit decide_hotplug_func(struct work_struct *work)
                 {
                     cpu_down(cpu);
                 }
+                break;
             }
             timer = HZ;
             scale_interactive_tunables(20000, 30000, 20000);
