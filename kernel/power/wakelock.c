@@ -616,7 +616,10 @@ EXPORT_SYMBOL(wake_lock_active);
 
 static int wakelock_stats_open(struct inode *inode, struct file *file)
 {
+#ifdef CONFIG_WAKELOCK_STAT
 	return single_open(file, wakelock_stats_show, NULL);
+#endif
+	return 0;
 }
 
 static const struct file_operations wakelock_stats_fops = {
@@ -658,14 +661,14 @@ static int __init wakelocks_init(void)
 
 	INIT_COMPLETION(suspend_sys_sync_comp);
 	suspend_sys_sync_work_queue =
-		create_singlethread_workqueue("suspend_sys_sync");
-	if (suspend_sys_sync_work_queue == NULL) {
+		alloc_workqueue("suspend_sys_sync", 0, 1);
+	if (!suspend_sys_sync_work_queue) {
 		ret = -ENOMEM;
 		goto err_suspend_sys_sync_work_queue;
 	}
 
-	suspend_work_queue = create_singlethread_workqueue("suspend");
-	if (suspend_work_queue == NULL) {
+	suspend_work_queue = alloc_workqueue("suspend", 0, 1);
+	if (!suspend_work_queue) {
 		ret = -ENOMEM;
 		goto err_suspend_work_queue;
 	}
