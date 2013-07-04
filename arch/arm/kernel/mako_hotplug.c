@@ -59,7 +59,7 @@ static void  __cpuinit decide_hotplug_func(struct work_struct *work)
 {
     int cpu;
     int cpu_boost;
-
+    int timer_rate;
     if (report_load_at_max_freq() >= stats.default_first_level)
     {
         if (likely(counter < 50))    
@@ -102,14 +102,28 @@ static void  __cpuinit decide_hotplug_func(struct work_struct *work)
         {
             for_each_online_cpu(cpu) 
             {
-                if (cpu > 1) 
+                if (cpu) 
                 {
                     cpu_down(cpu);
+		    break;
                 }
             }
-            timer = HZ;
-            scale_interactive_tunables(20000, 40000, 20000);
-        } 
+            timer = 800;
+            scale_interactive_tunables(0, 10000, 80000);
+	    timer_rate=0;
+        }
+        else{
+	  timer=timer-200;
+	  if (timer>0){
+	    timer_rate+=10000;
+	  }else{
+	    timer=HZ;
+	    timer_rate=40000;
+	    
+	  }
+	  
+	  scale_interactive_tunables(20000, timer_rate, 20000);
+	}
     }
 
     queue_delayed_work(wq, &decide_hotplug, msecs_to_jiffies(timer));
