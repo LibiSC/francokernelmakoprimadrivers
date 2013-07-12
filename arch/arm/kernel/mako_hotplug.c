@@ -10,7 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * Simple no bullshit hot[in]plug driver for SMP
+ * Simple no bullshit hot[un]plug driver for SMP
  */
 
 #include <linux/kernel.h>
@@ -28,8 +28,8 @@
 
 #define DEFAULT_FIRST_LEVEL 70
 #define DEFAULT_SUSPEND_FREQ 702000
-#define DEFAULT_CORE_ONLINE_BOOST get_hispeed_freq()
 #define DEFAULT_CORES_ON_TOUCH 2
+#define HIGH_LOAD_COUNTER 20
 
 struct cpu_stats
 {
@@ -62,8 +62,8 @@ static void  __cpuinit decide_hotplug_func(struct work_struct *work)
     int timer_rate;
     if (report_load_at_max_freq() >= stats.default_first_level)
     {
-        if (likely(counter < 50))    
-            counter++;
+        if (likely(counter < HIGH_LOAD_COUNTER))    
+            counter += 2;
     }
 
     else
@@ -72,7 +72,7 @@ static void  __cpuinit decide_hotplug_func(struct work_struct *work)
             counter--;
     }
 
-    if (is_touching && num_online_cpus() < stats.cores_on_touch)
+    if (unlikely(is_touching && num_online_cpus() < stats.cores_on_touch))
     {
         for_each_possible_cpu(cpu_boost)
         {
@@ -102,7 +102,7 @@ static void  __cpuinit decide_hotplug_func(struct work_struct *work)
         {
             for_each_online_cpu(cpu) 
             {
-                if (cpu) 
+                if (cpu > 1) 
                 {
                     cpu_down(cpu);
 		    break;
