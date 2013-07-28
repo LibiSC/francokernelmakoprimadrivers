@@ -194,7 +194,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?= arm
 
-CROSS_COMPILE	?= /home/carlos/Linaro4.7/android-toolchain-eabi/bin/arm-linux-androideabi-
+CROSS_COMPILE	?= /home/carlos/arm-unknown-linux-gnueabi-linaro_4.7.4-2013.07/bin/arm-unknown-linux-gnueabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
